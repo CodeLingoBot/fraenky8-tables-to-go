@@ -40,7 +40,7 @@ func (pg *Postgresql) GetDriverImportLibrary() string {
 // GetTables gets all tables for a given schema by name
 func (pg *Postgresql) GetTables() (tables []*database.Table, err error) {
 
-	err = pg.Select(&tables, `
+	innererr = pg.Select(&tables, `
 		SELECT table_name
 		FROM information_schema.tables
 		WHERE table_type = 'BASE TABLE'
@@ -55,13 +55,13 @@ func (pg *Postgresql) GetTables() (tables []*database.Table, err error) {
 		}
 	}
 
-	return tables, err
+	return tables, innererr
 }
 
 // PrepareGetColumnsOfTableStmt prepares the statement for retrieving the columns of a specific table for a given database
 func (pg *Postgresql) PrepareGetColumnsOfTableStmt() (err error) {
 
-	pg.GetColumnsOfTableStmt, err = pg.Preparex(`
+	pg.GetColumnsOfTableStmt, innererr = pg.Preparex(`
 		SELECT
 			ic.ordinal_position,
 			ic.column_name,
@@ -84,13 +84,13 @@ func (pg *Postgresql) PrepareGetColumnsOfTableStmt() (err error) {
 		ORDER BY ic.ordinal_position
 	`)
 
-	return err
+	return innererr
 }
 
 // GetColumnsOfTable executes the statement for retrieving the columns of a specific table in a given schema
 func (pg *Postgresql) GetColumnsOfTable(table *database.Table) (err error) {
 
-	err = pg.GetColumnsOfTableStmt.Select(&table.Columns, table.Name, pg.Schema)
+	innererr = pg.GetColumnsOfTableStmt.Select(&table.Columns, table.Name, pg.Schema)
 
 	if pg.Verbose {
 		if err != nil {
@@ -99,7 +99,7 @@ func (pg *Postgresql) GetColumnsOfTable(table *database.Table) (err error) {
 		}
 	}
 
-	return err
+	return innererr
 }
 
 // IsPrimaryKey checks if column belongs to primary key

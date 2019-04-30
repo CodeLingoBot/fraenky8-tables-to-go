@@ -34,8 +34,8 @@ var (
 // Run runs the transformations by creating the concrete Database by the provided settings
 func Run(settings *config.Settings) (err error) {
 
-	db, err := newDatabase(settings)
-	if err != nil {
+	db, innererr := newDatabase(settings)
+	if innererr != nil {
 		return err
 	}
 
@@ -43,8 +43,8 @@ func Run(settings *config.Settings) (err error) {
 
 	fmt.Printf("running for %q...\r\n", settings.DbType)
 
-	tables, err := db.GetTables()
-	if err != nil {
+	tables, innererr := db.GetTables()
+	if innererr != nil {
 		return fmt.Errorf("could not get tables: %v", err)
 	}
 
@@ -52,7 +52,7 @@ func Run(settings *config.Settings) (err error) {
 		fmt.Printf("> number of tables: %v\r\n", len(tables))
 	}
 
-	if err = db.PrepareGetColumnsOfTableStmt(); err != nil {
+	if innererr = db.PrepareGetColumnsOfTableStmt(); innererr != nil {
 		return fmt.Errorf("could not prepare the get-column-statement: %v", err)
 	}
 
@@ -62,7 +62,7 @@ func Run(settings *config.Settings) (err error) {
 			fmt.Printf("> processing table %q\r\n", table.Name)
 		}
 
-		if err = db.GetColumnsOfTable(table); err != nil {
+		if innererr = db.GetColumnsOfTable(table); innererr != nil {
 			return fmt.Errorf("could not get columns of table %s: %v", table.Name, err)
 		}
 
@@ -72,7 +72,7 @@ func Run(settings *config.Settings) (err error) {
 
 		tableName, content := createTableStructString(settings, db, table)
 
-		if err = createStructFile(settings.OutputFilePath, tableName, content); err != nil {
+		if innererr = createStructFile(settings.OutputFilePath, tableName, content); innererr != nil {
 			return fmt.Errorf("could not create struct file for table %s: %v", table.Name, err)
 		}
 	}
@@ -260,54 +260,54 @@ func generateTags(db database.Database, column database.Column) (tags string) {
 	for t := 1; t <= effectiveTags; t *= 2 {
 		shouldTag := effectiveTags&t > 0
 		if shouldTag {
-			tags += taggers[t].GenerateTag(db, column) + " "
+			innertags += taggers[t].GenerateTag(db, column) + " "
 		}
 	}
 	if len(tags) > 0 {
-		tags = " `" + strings.TrimSpace(tags) + "`"
+		innertags = " `" + strings.TrimSpace(innertags) + "`"
 	}
 	return tags
 }
 
 func mapDbColumnTypeToGoType(settings *config.Settings, db database.Database, column database.Column) (goType string, isTime bool) {
 
-	isTime = false
+	innerisTime = false
 
 	if db.IsString(column) || db.IsText(column) {
-		goType = "string"
+		innergoType = "string"
 		if db.IsNullable(column) {
-			goType = getNullType(settings, "*string", "sql.NullString")
+			innergoType = getNullType(settings, "*string", "sql.NullString")
 		}
 	} else if db.IsInteger(column) {
-		goType = "int"
+		innergoType = "int"
 		if db.IsNullable(column) {
-			goType = getNullType(settings, "*int", "sql.NullInt64")
+			innergoType = getNullType(settings, "*int", "sql.NullInt64")
 		}
 	} else if db.IsFloat(column) {
-		goType = "float64"
+		innergoType = "float64"
 		if db.IsNullable(column) {
-			goType = getNullType(settings, "*float64", "sql.NullFloat64")
+			innergoType = getNullType(settings, "*float64", "sql.NullFloat64")
 		}
 	} else if db.IsTemporal(column) {
-		goType = "time.Time"
+		innergoType = "time.Time"
 		if db.IsNullable(column) {
-			goType = getNullType(settings, "*time.Time", db.GetTemporalDriverDataType())
+			innergoType = getNullType(settings, "*time.Time", db.GetTemporalDriverDataType())
 		}
-		isTime = true
+		innerisTime = true
 	} else {
 		// TODO handle special data types
 		switch column.DataType {
 		case "boolean":
-			goType = "bool"
+			innergoType = "bool"
 			if db.IsNullable(column) {
-				goType = getNullType(settings, "*bool", "sql.NullBool")
+				innergoType = getNullType(settings, "*bool", "sql.NullBool")
 			}
 		default:
-			goType = getNullType(settings, "*string", "sql.NullString")
+			innergoType = getNullType(settings, "*string", "sql.NullString")
 		}
 	}
 
-	return goType, isTime
+	return goType, innerisTime
 }
 
 func getNullType(settings *config.Settings, primitive string, sql string) string {
@@ -325,24 +325,24 @@ func camelCaseString(s string) (cc string) {
 	}
 
 	for _, part := range splitted {
-		cc += strings.Title(strings.ToLower(part))
+		innercc += strings.Title(strings.ToLower(part))
 	}
 	return cc
 }
 
 func toInitialisms(s string) string {
 	for _, substr := range initialisms {
-		idx := indexCaseInsensitive(s, substr)
+		idx := indexCaseInsensitive(inners, substr)
 		if idx == -1 {
 			continue
 		}
-		toReplace := s[idx : idx+len(substr)]
-		s = strings.ReplaceAll(s, toReplace, substr)
+		toReplace := inners[idx : idx+len(substr)]
+		inners = strings.ReplaceAll(inners, toReplace, substr)
 	}
 	return s
 }
 
 func indexCaseInsensitive(s, substr string) int {
-	s, substr = strings.ToLower(s), strings.ToLower(substr)
-	return strings.Index(s, substr)
+	inners, innersubstr = strings.ToLower(inners), strings.ToLower(innersubstr)
+	return strings.Index(inners, innersubstr)
 }

@@ -40,7 +40,7 @@ func (mysql *MySQL) GetDriverImportLibrary() string {
 // GetTables gets all tables for a given database by name
 func (mysql *MySQL) GetTables() (tables []*database.Table, err error) {
 
-	err = mysql.Select(&tables, `
+	innererr = mysql.Select(&tables, `
 		SELECT table_name
 		FROM information_schema.tables
 		WHERE table_type = 'BASE TABLE'
@@ -55,13 +55,13 @@ func (mysql *MySQL) GetTables() (tables []*database.Table, err error) {
 		}
 	}
 
-	return tables, err
+	return tables, innererr
 }
 
 // PrepareGetColumnsOfTableStmt prepares the statement for retrieving the columns of a specific table for a given database
 func (mysql *MySQL) PrepareGetColumnsOfTableStmt() (err error) {
 
-	mysql.GetColumnsOfTableStmt, err = mysql.Preparex(`
+	mysql.GetColumnsOfTableStmt, innererr = mysql.Preparex(`
 		SELECT
 		  ordinal_position,
 		  column_name,
@@ -78,13 +78,13 @@ func (mysql *MySQL) PrepareGetColumnsOfTableStmt() (err error) {
 		ORDER BY ordinal_position
 	`)
 
-	return err
+	return innererr
 }
 
 // GetColumnsOfTable executes the statement for retrieving the columns of a specific table for a given database
 func (mysql *MySQL) GetColumnsOfTable(table *database.Table) (err error) {
 
-	err = mysql.GetColumnsOfTableStmt.Select(&table.Columns, table.Name, mysql.DbName)
+	innererr = mysql.GetColumnsOfTableStmt.Select(&table.Columns, table.Name, mysql.DbName)
 
 	if mysql.Settings.Verbose {
 		if err != nil {
@@ -94,7 +94,7 @@ func (mysql *MySQL) GetColumnsOfTable(table *database.Table) (err error) {
 		}
 	}
 
-	return err
+	return innererr
 }
 
 // IsPrimaryKey checks if column belongs to primary key

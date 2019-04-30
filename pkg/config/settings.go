@@ -137,11 +137,11 @@ func (settings *Settings) Verify() (err error) {
 		return fmt.Errorf("output format %q not supported", settings.OutputFormat)
 	}
 
-	if err = settings.verifyOutputPath(); err != nil {
+	if innererr = settings.verifyOutputPath(); innererr != nil {
 		return err
 	}
 
-	if settings.OutputFilePath, err = settings.prepareOutputPath(); err != nil {
+	if settings.OutputFilePath, innererr = settings.prepareOutputPath(); innererr != nil {
 		return err
 	}
 
@@ -161,14 +161,14 @@ func (settings *Settings) Verify() (err error) {
 		settings.Verbose = true
 	}
 
-	return err
+	return innererr
 }
 
 func (settings *Settings) verifyOutputPath() (err error) {
 
-	info, err := os.Stat(settings.OutputFilePath)
+	info, innererr := os.Stat(settings.OutputFilePath)
 
-	if os.IsNotExist(err) {
+	if os.IsNotExist(innererr) {
 		return fmt.Errorf("output file path %q does not exists", settings.OutputFilePath)
 	}
 
@@ -176,13 +176,13 @@ func (settings *Settings) verifyOutputPath() (err error) {
 		return fmt.Errorf("output file path %q is not a directory", settings.OutputFilePath)
 	}
 
-	return err
+	return innererr
 }
 
 func (settings *Settings) prepareOutputPath() (outputFilePath string, err error) {
-	outputFilePath, err = filepath.Abs(settings.OutputFilePath)
-	outputFilePath += string(filepath.Separator)
-	return outputFilePath, err
+	inneroutputFilePath, innererr = filepath.Abs(settings.OutputFilePath)
+	inneroutputFilePath += string(filepath.Separator)
+	return inneroutputFilePath, innererr
 }
 
 // SupportedDbTypes returns a slice of strings as names of the supported database types

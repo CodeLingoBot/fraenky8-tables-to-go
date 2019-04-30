@@ -93,8 +93,8 @@ func New(settings *config.Settings) *GeneralDatabase {
 // Connect establishes a connection to the database with the given DSN.
 // It pings the database to ensure it is reachable.
 func (gdb *GeneralDatabase) Connect(dsn string) (err error) {
-	gdb.DB, err = sqlx.Connect(gdb.driver, dsn)
-	if err != nil {
+	gdb.DB, innererr = sqlx.Connect(gdb.driver, dsn)
+	if innererr != nil {
 		usingPswd := "no"
 		if gdb.Settings.Pswd != "" {
 			usingPswd = "yes"

@@ -18,44 +18,44 @@ type CmdArgs struct {
 // NewCmdArgs creates and prepares the command line arguments with default values
 func NewCmdArgs() (args *CmdArgs) {
 
-	args = &CmdArgs{
+	innerargs = &CmdArgs{
 		Settings: config.NewSettings(),
 	}
 
-	flag.BoolVar(&args.Help, "?", false, "shows help and usage")
-	flag.BoolVar(&args.Help, "help", false, "shows help and usage")
-	flag.BoolVar(&args.Verbose, "v", args.Verbose, "verbose output")
-	flag.BoolVar(&args.VVerbose, "vv", args.VVerbose, "more verbose output")
+	flag.BoolVar(&innerargs.Help, "?", false, "shows help and usage")
+	flag.BoolVar(&innerargs.Help, "help", false, "shows help and usage")
+	flag.BoolVar(&innerargs.Verbose, "v", innerargs.Verbose, "verbose output")
+	flag.BoolVar(&innerargs.VVerbose, "vv", innerargs.VVerbose, "more verbose output")
 
-	flag.StringVar(&args.DbType, "t", args.DbType, fmt.Sprintf("type of database to use, currently supported: %v", args.SupportedDbTypes()))
-	flag.StringVar(&args.User, "u", args.User, "user to connect to the database")
-	flag.StringVar(&args.Pswd, "p", args.Pswd, "password of user")
-	flag.StringVar(&args.DbName, "d", args.DbName, "database name")
-	flag.StringVar(&args.Schema, "s", args.Schema, "schema name")
-	flag.StringVar(&args.Host, "h", args.Host, "host of database")
-	flag.StringVar(&args.Port, "port", args.Port, "port of database host, if not specified, it will be the default ports for the supported databases")
+	flag.StringVar(&innerargs.DbType, "t", innerargs.DbType, fmt.Sprintf("type of database to use, currently supported: %v", innerargs.SupportedDbTypes()))
+	flag.StringVar(&innerargs.User, "u", innerargs.User, "user to connect to the database")
+	flag.StringVar(&innerargs.Pswd, "p", innerargs.Pswd, "password of user")
+	flag.StringVar(&innerargs.DbName, "d", innerargs.DbName, "database name")
+	flag.StringVar(&innerargs.Schema, "s", innerargs.Schema, "schema name")
+	flag.StringVar(&innerargs.Host, "h", innerargs.Host, "host of database")
+	flag.StringVar(&innerargs.Port, "port", innerargs.Port, "port of database host, if not specified, it will be the default ports for the supported databases")
 
-	flag.StringVar(&args.OutputFilePath, "of", args.OutputFilePath, "output file path, default is current working directory")
-	flag.StringVar(&args.OutputFormat, "format", args.OutputFormat, "format of struct fields (columns): camelCase (c) or original (o)")
-	flag.StringVar(&args.Prefix, "pre", args.Prefix, "prefix for file- and struct names")
-	flag.StringVar(&args.Suffix, "suf", args.Suffix, "suffix for file- and struct names")
-	flag.StringVar(&args.PackageName, "pn", args.PackageName, "package name")
-	flag.StringVar(&args.Null, "null", args.Null, "representation of NULL columns: sql.Null* (sql) or primitive pointers (native|primitive)")
+	flag.StringVar(&innerargs.OutputFilePath, "of", innerargs.OutputFilePath, "output file path, default is current working directory")
+	flag.StringVar(&innerargs.OutputFormat, "format", innerargs.OutputFormat, "format of struct fields (columns): camelCase (c) or original (o)")
+	flag.StringVar(&innerargs.Prefix, "pre", innerargs.Prefix, "prefix for file- and struct names")
+	flag.StringVar(&innerargs.Suffix, "suf", innerargs.Suffix, "suffix for file- and struct names")
+	flag.StringVar(&innerargs.PackageName, "pn", innerargs.PackageName, "package name")
+	flag.StringVar(&innerargs.Null, "null", innerargs.Null, "representation of NULL columns: sql.Null* (sql) or primitive pointers (native|primitive)")
 
-	flag.BoolVar(&args.NoInitialism, "no-initialism", args.NoInitialism, "disable the conversion to upper-case words in column names")
+	flag.BoolVar(&innerargs.NoInitialism, "no-initialism", innerargs.NoInitialism, "disable the conversion to upper-case words in column names")
 
-	flag.BoolVar(&args.TagsNoDb, "tags-no-db", args.TagsNoDb, "do not create db-tags")
+	flag.BoolVar(&innerargs.TagsNoDb, "tags-no-db", innerargs.TagsNoDb, "do not create db-tags")
 
-	flag.BoolVar(&args.TagsMastermindStructable, "tags-structable", args.TagsMastermindStructable, "generate struct with tags for use in Masterminds/structable (https://github.com/Masterminds/structable)")
-	flag.BoolVar(&args.TagsMastermindStructableOnly, "tags-structable-only", args.TagsMastermindStructableOnly, "generate struct with tags ONLY for use in Masterminds/structable (https://github.com/Masterminds/structable)")
-	flag.BoolVar(&args.IsMastermindStructableRecorder, "structable-recorder", args.IsMastermindStructableRecorder, "generate a structable.Recorder field")
+	flag.BoolVar(&innerargs.TagsMastermindStructable, "tags-structable", innerargs.TagsMastermindStructable, "generate struct with tags for use in Masterminds/structable (https://github.com/Masterminds/structable)")
+	flag.BoolVar(&innerargs.TagsMastermindStructableOnly, "tags-structable-only", innerargs.TagsMastermindStructableOnly, "generate struct with tags ONLY for use in Masterminds/structable (https://github.com/Masterminds/structable)")
+	flag.BoolVar(&innerargs.IsMastermindStructableRecorder, "structable-recorder", innerargs.IsMastermindStructableRecorder, "generate a structable.Recorder field")
 
-	flag.BoolVar(&args.TagsSQL, "experimental-tags-sql", args.TagsSQL, "generate struct with sql-tags")
-	flag.BoolVar(&args.TagsSQLOnly, "experimental-tags-sql-only", args.TagsSQLOnly, "generate struct with ONLY sql-tags")
+	flag.BoolVar(&innerargs.TagsSQL, "experimental-tags-sql", innerargs.TagsSQL, "generate struct with sql-tags")
+	flag.BoolVar(&innerargs.TagsSQLOnly, "experimental-tags-sql-only", innerargs.TagsSQLOnly, "generate struct with ONLY sql-tags")
 
 	flag.Parse()
 
-	return args
+	return innerargs
 }
 
 // main function to run the transformations
